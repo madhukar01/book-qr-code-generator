@@ -1,1328 +1,530 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Book QR Code Generator</title>
-
-
-    <!-- QR CODE LIBRARY -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-
-    <style>
-
-        /* ================================
-           GENERAL
-        ================================= */
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-
-        body {
-            min-height: 100vh;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #667eea,
-                    #764ba2
-                );
-
-            padding: 30px 15px;
-        }
-
-
-        /* ================================
-           HEADER
-        ================================= */
-
-        .header {
-            text-align: center;
-            color: white;
-
-            margin-bottom: 25px;
-        }
-
-
-        .header h1 {
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
-
-
-        .header p {
-            font-size: 16px;
-        }
-
-
-        /* ================================
-           MAIN CONTAINER
-        ================================= */
-
-        .main-container {
-
-            max-width: 1000px;
-
-            margin: auto;
-
-            background: white;
-
-            border-radius: 20px;
-
-            padding: 30px;
-
-            box-shadow:
-                0 15px 40px
-                rgba(0, 0, 0, 0.25);
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 35px;
-        }
-
-
-        /* ================================
-           HEADINGS
-        ================================= */
-
-        h2 {
-            color: #333;
-
-            margin-bottom: 20px;
-        }
-
-
-        /* ================================
-           FORM
-        ================================= */
-
-        label {
-
-            display: block;
-
-            margin-top: 15px;
-
-            margin-bottom: 7px;
-
-            font-weight: bold;
-
-            color: #444;
-        }
-
-
-        input {
-
-            width: 100%;
-
-            padding: 13px;
-
-            border: 2px solid #ddd;
-
-            border-radius: 9px;
-
-            font-size: 15px;
-        }
-
-
-        input:focus {
-
-            outline: none;
-
-            border-color: #667eea;
-        }
-
-
-        /* ================================
-           BUTTONS
-        ================================= */
-
-        .buttons {
-
-            display: flex;
-
-            gap: 10px;
-
-            margin-top: 22px;
-        }
-
-
-        button {
-
-            flex: 1;
-
-            padding: 13px;
-
-            border: none;
-
-            border-radius: 9px;
-
-            color: white;
-
-            font-size: 15px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-
-            transition: 0.3s;
-        }
-
-
-        .generate-btn {
-
-            background: #667eea;
-        }
-
-
-        .generate-btn:hover {
-
-            background: #5265d4;
-
-            transform: translateY(-2px);
-        }
-
-
-        .reset-btn {
-
-            background: #555;
-        }
-
-
-        .reset-btn:hover {
-
-            background: #333;
-        }
-
-
-        /* ================================
-           QR SECTION
-        ================================= */
-
-        .qr-section {
-
-            text-align: center;
-
-            border-left:
-                1px solid #eee;
-
-            padding-left: 30px;
-        }
-
-
-        #qrcode {
-
-            min-height: 250px;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            margin: 15px 0;
-        }
-
-
-        .qr-placeholder {
-
-            color: #999;
-
-            padding: 70px 20px;
-        }
-
-
-        /* ================================
-           BOOK INFORMATION
-        ================================= */
-
-        .book-info {
-
-            display: none;
-
-            background: #f5f6ff;
-
-            padding: 15px;
-
-            border-radius: 10px;
-
-            margin-top: 10px;
-
-            text-align: left;
-        }
-
-
-        .book-info p {
-
-            margin: 7px 0;
-
-            color: #444;
-        }
-
-
-        /* ================================
-           DOWNLOAD QR BUTTON
-        ================================= */
-
-        .download-qr-btn {
-
-            display: none;
-
-            width: 100%;
-
-            background: #28a745;
-
-            margin-top: 15px;
-        }
-
-
-        .download-qr-btn:hover {
-
-            background: #218838;
-        }
-
-
-        /* ================================
-           ERROR
-        ================================= */
-
-        .error {
-
-            display: none;
-
-            color: #d00000;
-
-            background: #ffe5e5;
-
-            padding: 10px;
-
-            border-radius: 7px;
-
-            margin-top: 15px;
-
-            font-size: 14px;
-        }
-
-
-        /* ================================
-           INFORMATION BOX
-        ================================= */
-
-        .note {
-
-            margin-top: 15px;
-
-            padding: 12px;
-
-            background: #f5f5f5;
-
-            border-radius: 8px;
-
-            color: #666;
-
-            font-size: 12px;
-
-            line-height: 1.5;
-        }
-
-
-        /* ================================
-           PDF VIEWER
-        ================================= */
-
-        #pdfViewerPage {
-
-            display: none;
-
-            min-height: 100vh;
-
-            background: #f1f3f6;
-
-            position: fixed;
-
-            top: 0;
-
-            left: 0;
-
-            width: 100%;
-
-            overflow-y: auto;
-
-            z-index: 1000;
-        }
-
-
-        .pdf-header {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #667eea,
-                    #764ba2
-                );
-
-            color: white;
-
-            padding: 18px;
-
-            text-align: center;
-
-            position: sticky;
-
-            top: 0;
-
-            z-index: 10;
-        }
-
-
-        .pdf-header h1 {
-
-            font-size: 24px;
-
-            margin-bottom: 5px;
-        }
-
-
-        .pdf-header p {
-
-            font-size: 14px;
-        }
-
-
-        .pdf-container {
-
-            max-width: 1100px;
-
-            margin: 20px auto;
-
-            padding: 0 15px;
-        }
-
-
-        .pdf-box {
-
-            background: white;
-
-            border-radius: 12px;
-
-            padding: 15px;
-
-            box-shadow:
-                0 5px 20px
-                rgba(0, 0, 0, 0.12);
-        }
-
-
-        .pdf-buttons {
-
-            display: flex;
-
-            gap: 10px;
-
-            margin-bottom: 15px;
-        }
-
-
-        .pdf-button {
-
-            flex: 1;
-
-            padding: 13px;
-
-            border-radius: 8px;
-
-            text-align: center;
-
-            text-decoration: none;
-
-            color: white;
-
-            font-weight: bold;
-
-            border: none;
-
-            cursor: pointer;
-        }
-
-
-        .download-pdf {
-
-            background: #28a745;
-        }
-
-
-        .open-pdf {
-
-            background: #667eea;
-        }
-
-
-        .close-viewer {
-
-            background: #555;
-        }
-
-
-        .pdf-frame {
-
-            width: 100%;
-
-            height: 75vh;
-
-            border: 1px solid #ddd;
-
-            border-radius: 8px;
-
-            background: white;
-        }
-
-
-        /* ================================
-           MOBILE
-        ================================= */
-
-        @media (max-width: 750px) {
-
-            .main-container {
-
-                grid-template-columns: 1fr;
-            }
-
-
-            .qr-section {
-
-                border-left: none;
-
-                border-top:
-                    1px solid #eee;
-
-                padding-left: 0;
-
-                padding-top: 25px;
-            }
-
-
-            .header h1 {
-
-                font-size: 28px;
-            }
-        }
-
-
-        @media (max-width: 600px) {
-
-            .pdf-buttons {
-
-                flex-direction: column;
-            }
-
-
-            .pdf-frame {
-
-                height: 70vh;
-            }
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Book QR Code Generator</title>
+
+<!-- QR CODE LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:900px;
+    background:white;
+    border-radius:20px;
+    padding:35px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+}
+
+h1{
+    text-align:center;
+    color:#333;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#777;
+    margin-bottom:30px;
+}
+
+.form{
+    display:grid;
+    gap:15px;
+}
+
+label{
+    font-weight:bold;
+    color:#333;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:16px;
+}
+
+input:focus{
+    outline:none;
+    border-color:#667eea;
+}
+
+.buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+
+button{
+    flex:1;
+    min-width:150px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.generate{
+    background:#667eea;
+    color:white;
+}
+
+.reset{
+    background:#eee;
+    color:#333;
+}
+
+.download{
+    background:#28a745;
+    color:white;
+    display:none;
+}
+
+.qr-section{
+    text-align:center;
+    margin-top:30px;
+    padding-top:25px;
+    border-top:1px solid #ddd;
+}
+
+#qrcode{
+    display:flex;
+    justify-content:center;
+    margin:20px 0;
+}
+
+.book-info{
+    display:none;
+    background:#f5f5f5;
+    padding:15px;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+.book-info p{
+    margin:7px 0;
+}
+
+.error{
+    color:red;
+    text-align:center;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.viewer{
+    display:none;
+}
+
+.viewer iframe{
+    width:100%;
+    height:600px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.viewer-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.viewer-buttons a,
+.viewer-buttons button{
+    text-decoration:none;
+    text-align:center;
+    padding:13px;
+    border-radius:10px;
+    flex:1;
+    font-weight:bold;
+}
+
+.open-pdf{
+    background:#667eea;
+    color:white;
+}
+
+.download-pdf{
+    background:#28a745;
+    color:white;
+}
+
+.close-viewer{
+    background:#dc3545;
+    color:white;
+    border:none;
+}
+
+@media(max-width:600px){
+    .container{
+        padding:22px;
+    }
+
+    .viewer iframe{
+        height:450px;
+    }
+}
+</style>
 </head>
-
 
 <body>
 
+<div class="container">
 
-    <!-- =========================================
-         MAIN BOOK QR GENERATOR
-    ========================================== -->
+    <!-- GENERATOR -->
+    <div id="generator">
 
+        <h1>📚 Book QR Code Generator</h1>
 
-    <div id="generatorPage">
+        <p class="subtitle">
+            Generate a QR Code for your Book PDF
+        </p>
 
+        <div class="form">
 
-        <div class="header">
-
-            <h1>
-                📚 Book QR Code Generator
-            </h1>
-
-            <p>
-                Generate a QR code for quick access to your book PDF
-            </p>
-
-        </div>
-
-
-
-        <div class="main-container">
-
-
-            <!-- ================================
-                 BOOK DETAILS
-            ================================= -->
-
-
-            <div class="form-section">
-
-                <h2>
-                    📖 Book Details
-                </h2>
-
-
-                <label for="bookName">
-                    Book Name
-                </label>
-
-                <input
-                    type="text"
-                    id="bookName"
-                    placeholder="Enter book name"
-                >
-
-
-
-                <label for="authorName">
-                    Author Name
-                </label>
-
-                <input
-                    type="text"
-                    id="authorName"
-                    placeholder="Enter author name"
-                >
-
-
-
-                <label for="pdfLink">
-                    PDF Link
-                </label>
-
-                <input
-                    type="url"
-                    id="pdfLink"
-                    placeholder="Paste your public PDF link"
-                >
-
-
-
-                <div class="buttons">
-
-                    <button
-                        class="generate-btn"
-                        onclick="generateQR()"
-                    >
-                        🔳 Generate QR
-                    </button>
-
-
-                    <button
-                        class="reset-btn"
-                        onclick="resetForm()"
-                    >
-                        🔄 Reset
-                    </button>
-
-                </div>
-
-
-
-                <div
-                    class="error"
-                    id="error"
-                >
-                    ⚠️ Please enter Book Name,
-                    Author Name and PDF Link.
-                </div>
-
-
-
-                <div class="note">
-
-                    <strong>Important:</strong>
-
-                    Your PDF must be available
-                    through a public link.
-
-                    For example, you can upload
-                    your PDF to Google Drive and
-                    set access to
-
-                    <strong>
-                        Anyone with the link → Viewer
-                    </strong>.
-
-                </div>
-
+            <div>
+                <label>Book Name</label>
+                <input type="text" id="bookName"
+                       placeholder="Enter book name">
             </div>
 
+            <div>
+                <label>Author Name</label>
+                <input type="text" id="authorName"
+                       placeholder="Enter author name">
+            </div>
 
+            <div>
+                <label>PDF Link</label>
+                <input type="url" id="pdfLink"
+                       placeholder="Paste your PDF link here">
+            </div>
 
-            <!-- ================================
-                 QR CODE
-            ================================= -->
+            <div class="buttons">
 
+                <button class="generate"
+                        onclick="generateQR()">
+                    Generate QR Code
+                </button>
 
-            <div class="qr-section">
-
-                <h2>
-                    🔳 Your QR Code
-                </h2>
-
-
-                <div id="qrcode">
-
-                    <div class="qr-placeholder">
-
-                        Your QR code will
-                        appear here
-
-                    </div>
-
-                </div>
-
-
-
-                <div
-                    class="book-info"
-                    id="bookInfo"
-                >
-
-                    <p>
-
-                        <strong>
-                            📖 Book:
-                        </strong>
-
-                        <span id="displayBook">
-                        </span>
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>
-                            ✍️ Author:
-                        </strong>
-
-                        <span id="displayAuthor">
-                        </span>
-
-                    </p>
-
-                </div>
-
-
-
-                <button
-                    class="download-qr-btn"
-                    id="downloadQRButton"
-                    onclick="downloadQR()"
-                >
-
-                    ⬇️ Download QR Code
-
+                <button class="reset"
+                        onclick="resetForm()">
+                    Reset
                 </button>
 
             </div>
 
-        </div>
-
-
-        <div class="header"
-             style="margin-top:25px;margin-bottom:0;">
-
-            <p>
-                BOOK QR CODE GENERATOR |
-                College Project
-            </p>
+            <div id="error" class="error"></div>
 
         </div>
 
-    </div>
+        <div class="qr-section">
 
+            <h2>Generated QR Code</h2>
 
+            <div id="qrcode"></div>
 
-    <!-- =========================================
-         PDF VIEWER PAGE
-    ========================================== -->
+            <div id="bookInfo" class="book-info">
+                <p><strong>Book:</strong>
+                    <span id="displayBook"></span>
+                </p>
 
-
-    <div id="pdfViewerPage">
-
-
-        <div class="pdf-header">
-
-            <h1>
-                📚 Book PDF
-            </h1>
-
-            <p>
-                Read or download your book
-            </p>
-
-        </div>
-
-
-
-        <div class="pdf-container">
-
-
-            <div class="pdf-box">
-
-
-                <div class="pdf-buttons">
-
-
-                    <a
-                        id="downloadPDF"
-                        class="pdf-button download-pdf"
-                        href="#"
-                        target="_blank"
-                    >
-
-                        ⬇️ Download PDF
-
-                    </a>
-
-
-
-                    <a
-                        id="openPDF"
-                        class="pdf-button open-pdf"
-                        href="#"
-                        target="_blank"
-                    >
-
-                        🔗 Open PDF
-
-                    </a>
-
-
-
-                    <button
-                        class="pdf-button close-viewer"
-                        onclick="closePDFViewer()"
-                    >
-
-                        ✖ Close
-
-                    </button>
-
-                </div>
-
-
-
-                <iframe
-                    id="pdfFrame"
-                    class="pdf-frame"
-                    title="Book PDF"
-                >
-                </iframe>
-
-
+                <p><strong>Author:</strong>
+                    <span id="displayAuthor"></span>
+                </p>
             </div>
 
+            <button id="downloadQR"
+                    class="download"
+                    onclick="downloadQR()">
+                Download QR Code
+            </button>
+
         </div>
 
     </div>
 
 
+    <!-- PDF VIEWER -->
+    <div id="viewer" class="viewer">
 
-    <!-- =========================================
-         JAVASCRIPT
-    ========================================== -->
+        <h1>📖 Book PDF</h1>
 
+        <p class="subtitle">
+            Your PDF is ready to view
+        </p>
 
-    <script>
+        <iframe id="pdfFrame"></iframe>
 
+        <div class="viewer-buttons">
 
-        /*
-        ==================================================
-        GENERATE QR CODE
-        ==================================================
-        */
+            <a id="openPDF"
+               class="open-pdf"
+               target="_blank">
+                Open PDF
+            </a>
 
+            <a id="downloadPDF"
+               class="download-pdf"
+               target="_blank">
+                Download PDF
+            </a>
 
-        function generateQR() {
+            <button class="close-viewer"
+                    onclick="closeViewer()">
+                Close
+            </button>
 
+        </div>
 
-            // Get input values
+    </div>
 
-            let bookName =
-                document
-                .getElementById("bookName")
-                .value
-                .trim();
+</div>
 
 
-            let authorName =
-                document
-                .getElementById("authorName")
-                .value
-                .trim();
+<script>
 
+/* ================================
+   GENERATE QR CODE
+================================ */
 
-            let pdfLink =
-                document
-                .getElementById("pdfLink")
-                .value
-                .trim();
+function generateQR(){
 
+    const bookName =
+        document.getElementById("bookName").value.trim();
 
+    const authorName =
+        document.getElementById("authorName").value.trim();
 
-            let error =
-                document
-                .getElementById("error");
+    const pdfLink =
+        document.getElementById("pdfLink").value.trim();
 
+    const error =
+        document.getElementById("error");
 
+    error.innerHTML = "";
 
-            /*
-            ------------------------------------------
-            CHECK EMPTY FIELDS
-            ------------------------------------------
-            */
+    if(bookName === ""){
+        error.innerHTML = "Please enter the book name.";
+        return;
+    }
 
+    if(authorName === ""){
+        error.innerHTML = "Please enter the author name.";
+        return;
+    }
 
-            if (
-                bookName === "" ||
-                authorName === "" ||
-                pdfLink === ""
-            ) {
+    if(pdfLink === ""){
+        error.innerHTML = "Please enter the PDF link.";
+        return;
+    }
 
-                error.style.display =
-                    "block";
+    if(!pdfLink.startsWith("http://") &&
+       !pdfLink.startsWith("https://")){
 
-                error.innerHTML =
-                    "⚠️ Please enter Book Name, Author Name and PDF Link.";
+        error.innerHTML =
+            "Please enter a valid PDF link starting with https://";
 
-                return;
-            }
+        return;
+    }
 
+    /* Check QR library */
 
+    if(typeof QRCode === "undefined"){
 
-            /*
-            ------------------------------------------
-            CHECK VALID URL
-            ------------------------------------------
-            */
+        error.innerHTML =
+            "QR Code library could not load. Please refresh the page.";
 
+        return;
+    }
 
-            try {
+    /* Clear old QR */
 
-                new URL(pdfLink);
+    document.getElementById("qrcode").innerHTML = "";
 
-            }
-
-            catch {
-
-                error.style.display =
-                    "block";
-
-                error.innerHTML =
-                    "⚠️ Please enter a valid PDF link.";
-
-                return;
-            }
-
-
-
-            /*
-            ------------------------------------------
-            HIDE ERROR
-            ------------------------------------------
-            */
-
-
-            error.style.display =
-                "none";
-
-
-
-            /*
-            ------------------------------------------
-            CLEAR OLD QR
-            ------------------------------------------
-            */
-
-
-            let qrBox =
-                document
-                .getElementById("qrcode");
-
-
-            qrBox.innerHTML = "";
-
-
-
-            /*
-            ==================================================
-            IMPORTANT PART
-            ==================================================
-
-            The QR code stores the PDF link.
-
-            When scanned, this same page opens
-            the PDF Viewer automatically.
-
-            ==================================================
-            */
-
-
-            let currentPage =
-                window.location.href
-                .split("?")[0];
-
-
-            let viewerLink =
-                currentPage +
-                "?pdf=" +
-                encodeURIComponent(pdfLink);
-
-
-
-            /*
-            ------------------------------------------
-            CREATE QR CODE
-            ------------------------------------------
-            */
-
-
-            new QRCode(
-
-                qrBox,
-
-                {
-
-                    text: viewerLink,
-
-                    width: 230,
-
-                    height: 230,
-
-                    colorDark:
-                        "#000000",
-
-                    colorLight:
-                        "#ffffff",
-
-                    correctLevel:
-                        QRCode.CorrectLevel.H
-
-                }
-
-            );
-
-
-
-            /*
-            ------------------------------------------
-            DISPLAY BOOK INFORMATION
-            ------------------------------------------
-            */
-
-
-            document
-            .getElementById("displayBook")
-            .textContent =
-                bookName;
-
-
-            document
-            .getElementById("displayAuthor")
-            .textContent =
-                authorName;
-
-
-
-            document
-            .getElementById("bookInfo")
-            .style.display =
-                "block";
-
-
-
-            document
-            .getElementById("downloadQRButton")
-            .style.display =
-                "block";
-
+    /*
+       Current website URL
+       Example:
+       https://madhukar01.github.io/book-qr-code-generator/
+    */
+
+    const currentPage =
+        window.location.href.split("?")[0];
+
+    /*
+       QR will open this same website
+       and then show the PDF.
+    */
+
+    const viewerLink =
+        currentPage + "?pdf=" +
+        encodeURIComponent(pdfLink);
+
+    /* Generate QR */
+
+    new QRCode(
+        document.getElementById("qrcode"),
+        {
+            text: viewerLink,
+            width:230,
+            height:230,
+            colorDark:"#000000",
+            colorLight:"#ffffff",
+            correctLevel:QRCode.CorrectLevel.H
         }
+    );
 
+    /* Show book information */
 
+    document.getElementById("displayBook")
+        .innerText = bookName;
 
-        /*
-        ==================================================
-        DOWNLOAD QR CODE
-        ==================================================
-        */
+    document.getElementById("displayAuthor")
+        .innerText = authorName;
 
+    document.getElementById("bookInfo")
+        .style.display = "block";
 
-        function downloadQR() {
+    document.getElementById("downloadQR")
+        .style.display = "block";
+}
 
 
-            let qrImage =
-                document
-                .querySelector("#qrcode img");
+/* ================================
+   DOWNLOAD QR CODE
+================================ */
 
+function downloadQR(){
 
+    const qr =
+        document.querySelector("#qrcode img");
 
-            if (!qrImage) {
+    if(!qr){
+        alert("Please generate the QR code first.");
+        return;
+    }
 
-                alert(
-                    "Please generate the QR code first."
-                );
+    const link =
+        document.createElement("a");
 
-                return;
-            }
+    link.href = qr.src;
 
+    link.download = "Book_QR_Code.png";
 
+    document.body.appendChild(link);
 
-            let link =
-                document
-                .createElement("a");
+    link.click();
 
+    document.body.removeChild(link);
+}
 
-            link.href =
-                qrImage.src;
 
+/* ================================
+   RESET
+================================ */
 
-            link.download =
-                "Book-QR-Code.png";
+function resetForm(){
 
+    document.getElementById("bookName").value = "";
 
-            link.click();
+    document.getElementById("authorName").value = "";
 
-        }
+    document.getElementById("pdfLink").value = "";
 
+    document.getElementById("qrcode").innerHTML = "";
 
+    document.getElementById("bookInfo").style.display = "none";
 
-        /*
-        ==================================================
-        RESET
-        ==================================================
-        */
+    document.getElementById("downloadQR").style.display = "none";
 
+    document.getElementById("error").innerHTML = "";
+}
 
-        function resetForm() {
 
-            document
-            .getElementById("bookName")
-            .value = "";
+/* ================================
+   OPEN PDF VIEWER
+================================ */
 
+function openPDFViewer(pdf){
 
-            document
-            .getElementById("authorName")
-            .value = "";
+    document.getElementById("generator")
+        .style.display = "none";
 
+    document.getElementById("viewer")
+        .style.display = "block";
 
-            document
-            .getElementById("pdfLink")
-            .value = "";
+    document.getElementById("pdfFrame")
+        .src = pdf;
 
+    document.getElementById("openPDF")
+        .href = pdf;
 
+    document.getElementById("downloadPDF")
+        .href = pdf;
 
-            document
-            .getElementById("qrcode")
-            .innerHTML =
+    document.getElementById("downloadPDF")
+        .download = "";
+}
 
-                '<div class="qr-placeholder">' +
-                'Your QR code will appear here' +
-                '</div>';
 
+/* ================================
+   CLOSE PDF VIEWER
+================================ */
 
+function closeViewer(){
 
-            document
-            .getElementById("bookInfo")
-            .style.display =
-                "none";
+    document.getElementById("viewer")
+        .style.display = "none";
 
+    document.getElementById("generator")
+        .style.display = "block";
 
-            document
-            .getElementById("downloadQRButton")
-            .style.display =
-                "none";
+    document.getElementById("pdfFrame")
+        .src = "";
+}
 
 
-            document
-            .getElementById("error")
-            .style.display =
-                "none";
+/* ================================
+   CHECK QR URL
+================================ */
 
-        }
+const parameters =
+    new URLSearchParams(window.location.search);
 
+const pdf =
+    parameters.get("pdf");
 
+if(pdf){
 
-        /*
-        ==================================================
-        OPEN PDF VIEWER
-        ==================================================
-        */
+    openPDFViewer(pdf);
 
+}
 
-        function openPDFViewer(pdf) {
-
-
-            /*
-            Hide generator
-            */
-
-            document
-            .getElementById("generatorPage")
-            .style.display =
-                "none";
-
-
-
-            /*
-            Show PDF viewer
-            */
-
-            document
-            .getElementById("pdfViewerPage")
-            .style.display =
-                "block";
-
-
-
-            /*
-            Put PDF inside viewer
-            */
-
-            document
-            .getElementById("pdfFrame")
-            .src =
-                pdf;
-
-
-
-            /*
-            Download button
-            */
-
-            document
-            .getElementById("downloadPDF")
-            .href =
-                pdf;
-
-
-
-            /*
-            Open PDF button
-            */
-
-            document
-            .getElementById("openPDF")
-            .href =
-                pdf;
-
-        }
-
-
-
-        /*
-        ==================================================
-        CLOSE PDF VIEWER
-        ==================================================
-        */
-
-
-        function closePDFViewer() {
-
-
-            document
-            .getElementById("pdfViewerPage")
-            .style.display =
-                "none";
-
-
-            document
-            .getElementById("generatorPage")
-            .style.display =
-                "block";
-
-
-            document
-            .getElementById("pdfFrame")
-            .src =
-                "";
-
-        }
-
-
-
-        /*
-        ==================================================
-        CHECK WHETHER QR WAS SCANNED
-        ==================================================
-
-        If URL contains:
-
-        ?pdf=YOUR_PDF_LINK
-
-        then automatically open PDF viewer.
-
-        ==================================================
-        */
-
-
-        window.onload =
-            function() {
-
-
-                let parameters =
-                    new URLSearchParams(
-                        window.location.search
-                    );
-
-
-                let pdf =
-                    parameters.get("pdf");
-
-
-
-                if (pdf) {
-
-
-                    try {
-
-                        pdf =
-                            decodeURIComponent(pdf);
-
-                    }
-
-                    catch {
-
-                        // Keep original value
-
-                    }
-
-
-
-                    openPDFViewer(pdf);
-
-                }
-
-            };
-
-
-    </script>
-
+</script>
 
 </body>
-
 </html>
-```
